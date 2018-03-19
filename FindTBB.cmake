@@ -97,8 +97,6 @@ elseif(UNIX)
   endif()
 endif (WIN32)
 
-message("TBB_LIBRARY: ${TBB_ROOT_DIR}/lib/${tbb_lib_suffix}")
-
 find_library(TBB_LIBRARY tbb
              PATHS         ${TBB_ROOT_DIR} 
              PATH_SUFFIXES "lib/${tbb_lib_suffix}"
@@ -119,9 +117,6 @@ foreach(component IN LISTS TBB_FIND_COMPONENTS)
     message(FATAL_ERROR "Invalid COMPONENT (${component}) specified.")
   endif()
 
-  message("TBB_LIBRARY: ${TBB_ROOT_DIR}/lib/${tbb_lib_suffix}")
-  message("libname: ${libname}")
-
   find_library("TBB_${component}_LIBRARY" ${libname}
     PATHS         ${TBB_ROOT_DIR} 
     PATH_SUFFIXES "lib/${tbb_lib_suffix}"
@@ -131,8 +126,6 @@ foreach(component IN LISTS TBB_FIND_COMPONENTS)
     set("TBB_${component}_FOUND" true)
   endif()
 
-  message("TBB_${component}_LIBRARY = ${TBB_${component}_LIBRARY}")
-  message("TBB_${component}_FOUND = ${TBB_${component}_FOUND}")
 endforeach(component IN LISTS TBB_FIND_COMPONENTS)
 
 include(FindPackageHandleStandardArgs)
