@@ -110,7 +110,11 @@ endif()
 
 # set MKL_ROOT_DIR in cache if not already done so (Windows only)
 if (NOT MKL_ROOT_DIR)
+  if (EXISTS $ENV{MKLROOT})
     set(MKL_ROOT_DIR $ENV{MKLROOT} CACHE PATH "MKL installation root path")
+  else()
+    set(MKL_ROOT_DIR "$ENV{ProgramFiles\(x86\)}/IntelSWTools/compilers_and_libraries/windows/mkl" CACHE PATH "MKL installation root path")
+  endif()
 endif (NOT MKL_ROOT_DIR)
 
 #####################################
