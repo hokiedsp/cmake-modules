@@ -97,7 +97,12 @@ elseif(UNIX)
   endif()
 endif (WIN32)
 
-find_library(TBB_LIBRARY tbb
+set(libname tbb)
+if (CMAKE_BUILD_TYPE STREQUAL Debug)
+  set(libname "${libname}_debug")
+endif()
+
+find_library(TBB_LIBRARY ${libname}
              PATHS         ${TBB_ROOT_DIR} 
              PATH_SUFFIXES "lib/${tbb_lib_suffix}"
              DOC           "TBB core library path")
@@ -117,6 +122,10 @@ foreach(component IN LISTS TBB_FIND_COMPONENTS)
     message(FATAL_ERROR "Invalid COMPONENT (${component}) specified.")
   endif()
 
+  if (CMAKE_BUILD_TYPE STREQUAL Debug)
+    set(libname "${libname}_debug")
+  endif()
+  
   find_library("TBB_${component}_LIBRARY" ${libname}
     PATHS         ${TBB_ROOT_DIR} 
     PATH_SUFFIXES "lib/${tbb_lib_suffix}"
