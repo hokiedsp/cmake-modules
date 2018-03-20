@@ -9,9 +9,9 @@
 #    DYNAMIC_LINKING        
 #    RUNTIME_LINKING 
 #
-#    SEQUENTIAL_THREADING
-#    OPENMP_THREADING
-#    TBB_THREADING
+#    SEQUENTIAL_THREADING - sequential execution, not relying on any threading library
+#    OPENMP_THREADING     - using Intel OpenMP library
+#    TBB_THREADING        - using Intel TBB library
 #
 # Only 1 Linking Component (STATIC_LINKING, DYNAMIC_LINKING, or 
 # RUNTIME_LINKING) may be specified.
@@ -30,15 +30,30 @@
 # :variable:`MKL_RUNTIME_ROOT_DIR`
 #   the root of the runtime installations.
 #
-# This module defines
-# MKL_INCLUDE_DIR, where to find MKL.h
-# MKL_LIBRARY, the library to link against to use MKL.
-# MKL_SHAREDLIBRARY
-# MKL_FOUND, If false, do not try to use MKL.
-# MKL_ROOT, if this module use this path to find MKL header
-# and libraries.
-#
-# In Windows, it looks for MKL_DIR environment variable if defined
+# Result variables
+# """"""""""""""""
+# ``MKL_FOUND``
+#   ``TRUE`` if the MKL installation and runtime files are found, ``FALSE``
+#   otherwise. All variable below are defined if MKL is found.
+# ``MKL_INCLUDE_DIR`` or ``MKL_INCLUDE_DIRS`` (Cached)
+#  the path of the MKL header files (checks for mkl.h)
+# ``MKL_LIBRARIES`` (Cached)
+#   the set of all the libraries
+# ``MKL_LIBRARY`` (Cached)
+#   core MKL library
+# ``MKL_INTERFACE_LIBRARY`` (Cached)
+#   interface MKL library
+# ``MKL_THREADING_LIBRARY`` (Cached)
+#   threading MKL library
+# ``MKL_FOUND``
+#   ``TRUE`` if all the pieces of MKL is found, ``FALSE`` otherwise
+# ``MKL_LINKING_FOUND``
+#   ``TRUE`` if the MKL library is found for the requested linking, ``FALSE`` 
+#   otherwise. Only created if XXX_LINKING component is given.
+# ``MKL_THREADING_FOUND``
+#   ``TRUE`` if the MKL library is found for the requested threading library 
+#   support, ``FALSE`` otherwise. Only created if XXX_THREADING component is 
+#   given.
 
 # Get native target architecture
 include(CheckSymbolExists)
