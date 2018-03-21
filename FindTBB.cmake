@@ -101,11 +101,6 @@ if (CMAKE_BUILD_TYPE STREQUAL Debug)
   set(libname "${libname}_debug")
 endif()
 
-find_library(TBB_LIBRARY ${libname}
-             PATHS         ${TBB_ROOT_DIR} 
-             PATH_SUFFIXES "lib/${ARCH_STR}/${tbb_lib_suffix}"
-             DOC           "TBB core library path")
-
 if (WIN32 AND NOT TBB_RUNTIME_LIBRARY_DIR)
   find_path(TBB_RUNTIME_LIBRARY_DIR tbb.dll
             PATHS      "$ENV{ProgramFiles\(x86\)}/IntelSWTools/compilers_and_libraries/windows/redist/${ARCH_STR}/tbb"
@@ -113,31 +108,47 @@ if (WIN32 AND NOT TBB_RUNTIME_LIBRARY_DIR)
             DOC        "TBB Runtime Library Path" NO_DEFAULT_PATH)
 endif (WIN32 AND NOT TBB_RUNTIME_LIBRARY_DIR)
 
-# separate requested components into linking & threading
-foreach(component IN LISTS TBB_FIND_COMPONENTS)
-  if (component STREQUAL MALLOC)
-    set(libname "tbbmalloc")
-  elseif (component STREQUAL PREVIEW)
-    set(libname "tbb_preview")
-  elseif (component STREQUAL MALLOC_PROXY)
-    if (APPLE)
-      message(FATAL_ERROR "${component} COMPONENT is not available for OSX.")
-    endif()
-    set(libname "tbbmalloc_proxy")
-  else()
-    message(FATAL_ERROR "Invalid COMPONENT (${component}) specified.")
-  endif()
+# if Debug build, must link to XXX_DEBUG.LIB
+# -> force resetting library if build type changes from/to Debug
+if (((CMAKE_BUILD_TYPE STREQUAL Debug) AND (TBB_LIBRARY MATCHES .+tbb.lib))
+    OR (NOT (CMAKE_BUILD_TYPE STREQUAL Debug) AND (TBB_LIBRARY MATCHES .+tbb_debug.lib)))
+  unset(TBB_LIBRARY CACHE)
+  unset(TBB_MALLOC_LIBRARY CACHE)
+  unset(TBB_PREVIEW_LIBRARY CACHE)
+  unset(TBB_MALLOC_PROXY_LIBRARY CACHE)
+endif()
 
+# separate requested components into linking & threading
+list(APPEND TBB_FIND_COMPONENTS TBB)
+foreach(component IN LISTS TBB_FIND_COMPONENTS)
+  if (component STREQUAL TBB)
+    set(_var_name TBB)
+    set(libname "tbb")
+  else()
+    set(_var_name "TBB_${component}")
+    if (component STREQUAL MALLOC)
+      set(libname "tbbmalloc")
+    elseif (component STREQUAL PREVIEW)
+      set(libname "tbb_preview")
+    elseif (component STREQUAL MALLOC_PROXY)
+      if (APPLE)
+        message(FATAL_ERROR "${component} COMPONENT is not available for OSX.")
+      endif()
+      set(libname "tbbmalloc_proxy")
+    else()
+      message(FATAL_ERROR "Invalid COMPONENT (${component}) specified.")
+    endif()
+  endif()
   if (CMAKE_BUILD_TYPE STREQUAL Debug)
     set(libname "${libname}_debug")
   endif()
-  
-  find_library("TBB_${component}_LIBRARY" ${libname}
+
+  find_library("${_var_name}_LIBRARY" ${libname}
     PATHS         ${TBB_ROOT_DIR} 
     PATH_SUFFIXES "lib/${ARCH_STR}/${tbb_lib_suffix}"
     DOC           "TBB ${libname} library path")
 
-  if (TBB_${component}_LIBRARY)
+  if (${_var_name}_LIBRARY)
     set("TBB_${component}_FOUND" true)
   endif()
 
@@ -160,4 +171,5 @@ mark_as_advanced(
   TBB_MALLOC_LIBRARY
   TBB_MALLOC_PROXY_LIBRARY
   TBB_PREVIEW_LIBRARY
+  TBB_RUNTIME_LIBRARY_DIR
 )
