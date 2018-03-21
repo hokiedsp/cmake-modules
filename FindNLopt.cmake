@@ -48,6 +48,19 @@ find_library(NLopt_LIBRARY
     DOC "Location of NLopt library"
 )
 
+if (WIN32 AND NOT NLopt_RUNTIME_LIBRARY_DIR)
+  find_path(NLopt_RUNTIME_LIBRARY_DIR mkl_core.dll
+            PATHS ${NLopt_ROOT_DIR}
+                  ${CMAKE_INSTALL_FULL_LIBDIR}
+                  "$ENV{ProgramFiles}"
+                  "$ENV{USERPROFILE}/AppData/Local"
+                  "$ENV{USERPROFILE}/AppData/Local/Programs"
+                  "$ENV{USERPROFILE}/AppData/Local/lib"
+                  "$ENV{SystemDrive}"
+            PATH_SUFFIXES nlopt/bin
+            DOC        "NLopt Runtime Library Path" NO_DEFAULT_PATH)
+endif (WIN32 AND NOT NLopt_RUNTIME_LIBRARY_DIR)
+
 find_package_handle_standard_args(
   NLopt
   REQUIRED_VARS NLopt_INCLUDE_DIR NLopt_LIBRARY)
@@ -60,4 +73,5 @@ endif (NLopt_FOUND)
 mark_as_advanced(
     NLopt_INCLUDE_DIR
     NLopt_LIBRARY
+    NLopt_RUNTIME_LIBRARY_DIR
 )
