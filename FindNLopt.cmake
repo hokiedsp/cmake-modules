@@ -49,7 +49,7 @@ find_library(NLopt_LIBRARY
 )
 
 if (WIN32 AND NOT NLopt_RUNTIME_LIBRARY_DIR)
-  find_path(NLopt_RUNTIME_LIBRARY_DIR mkl_core.dll
+  find_path(NLopt_RUNTIME_LIBRARY_DIR nlopt.dll
             PATHS ${NLopt_ROOT_DIR}
                   ${CMAKE_INSTALL_FULL_LIBDIR}
                   "$ENV{ProgramFiles}"
