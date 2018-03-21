@@ -78,9 +78,9 @@ else(MSVC)
 endif(MSVC)
 
 if(RTC_ARCH_X64)
-  set(ARCH_STR x64)
+  set(ARCH_STR intel64)
 elseif(RTC_ARCH_X86)
-  set(ARCH_STR x86)
+  set(ARCH_STR ia32)
 else()
   message(FATAL_ERROR "Unknown or unsupported architecture")
 endif()
@@ -176,6 +176,12 @@ find_library(MKL_LIBRARY ${mkl_library_name}
              DOC           "MKL core library path")
 
 list(APPEND _req_vars MKL_INCLUDE_DIR MKL_LIBRARY)
+
+if (WIN32 AND NOT (STATIC_LINKING OR MKL_RUNTIME_LIBRARY_DIR))
+  find_path(MKL_RUNTIME_LIBRARY_DIR mkl_core.dll
+            PATHS      "$ENV{ProgramFiles\(x86\)}/IntelSWTools/compilers_and_libraries/windows/redist/${ARCH_STR}/mkl"
+            DOC        "MKL Runtime Library Path" NO_DEFAULT_PATH)
+endif (WIN32 AND NOT (STATIC_LINKING OR MKL_RUNTIME_LIBRARY_DIR))
 
 if (mkl_interface_library_name)
     find_library(MKL_INTERFACE_LIBRARY ${mkl_interface_library_name}

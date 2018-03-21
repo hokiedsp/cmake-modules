@@ -78,22 +78,21 @@ find_path(TBB_INCLUDE_DIR tbb/tbb.h
 
 # Determine the library path
 if (WIN32)
-  set(tbb_lib_suffix ${ARCH_STR})
   if (MSVC_VERSION VERSION_GREATER_EQUAL 1910)
-    set(tbb_lib_suffix "${tbb_lib_suffix}/vc14_uwp")
+    set(tbb_lib_suffix vc14_uwp)
   elseif (MSVC_VERSION VERSION_GREATER_EQUAL 1900)
-    set(tbb_lib_suffix "${tbb_lib_suffix}/vc14")
+    set(tbb_lib_suffix vc14)
   elseif (MSVC_VERSION VERSION_GREATER_EQUAL 1800)
-    set(tbb_lib_suffix "${tbb_lib_suffix}/vc12")
+    set(tbb_lib_suffix vc12)
   else()
-    set(tbb_lib_suffix "${tbb_lib_suffix}/vc_mt")
+    set(tbb_lib_suffix vc_mt)
   endif()
 elseif(UNIX)
   set(tbb_lib_suffix ${ARCH_STR})
   if (CMAKE_C_COMPILER_VERSION VERSION_GREATER_EQUAL 4.4)
-    set(tbb_lib_suffix "${tbb_lib_suffix}/gcc4.4")
+    set(tbb_lib_suffix gcc4.4)
   else()
-    set(tbb_lib_suffix "${tbb_lib_suffix}/gcc4.1")
+    set(tbb_lib_suffix gcc4.1)
   endif()
 endif (WIN32)
 
@@ -104,8 +103,15 @@ endif()
 
 find_library(TBB_LIBRARY ${libname}
              PATHS         ${TBB_ROOT_DIR} 
-             PATH_SUFFIXES "lib/${tbb_lib_suffix}"
+             PATH_SUFFIXES "lib/${ARCH_STR}/${tbb_lib_suffix}"
              DOC           "TBB core library path")
+
+if (WIN32 AND NOT TBB_RUNTIME_LIBRARY_DIR)
+  find_path(TBB_RUNTIME_LIBRARY_DIR tbb.dll
+            PATHS      "$ENV{ProgramFiles\(x86\)}/IntelSWTools/compilers_and_libraries/windows/redist/${ARCH_STR}/tbb"
+            PATH_SUFFIXES ${tbb_lib_suffix}
+            DOC        "TBB Runtime Library Path" NO_DEFAULT_PATH)
+endif (WIN32 AND NOT TBB_RUNTIME_LIBRARY_DIR)
 
 # separate requested components into linking & threading
 foreach(component IN LISTS TBB_FIND_COMPONENTS)
@@ -128,7 +134,7 @@ foreach(component IN LISTS TBB_FIND_COMPONENTS)
   
   find_library("TBB_${component}_LIBRARY" ${libname}
     PATHS         ${TBB_ROOT_DIR} 
-    PATH_SUFFIXES "lib/${tbb_lib_suffix}"
+    PATH_SUFFIXES "lib/${ARCH_STR}/${tbb_lib_suffix}"
     DOC           "TBB ${libname} library path")
 
   if (TBB_${component}_LIBRARY)
