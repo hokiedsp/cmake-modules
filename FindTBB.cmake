@@ -8,6 +8,7 @@
 #    PREVIEW
 #    MALLOC
 #    MALLOC_PROXY
+#    DEBUG
 #
 # Module Input Variables
 # ^^^^^^^^^^^^^^^^^^^^^^
@@ -108,15 +109,11 @@ if (WIN32 AND NOT TBB_RUNTIME_LIBRARY_DIR)
             DOC        "TBB Runtime Library Path" NO_DEFAULT_PATH)
 endif (WIN32 AND NOT TBB_RUNTIME_LIBRARY_DIR)
 
-# if Debug build, must link to XXX_DEBUG.LIB
-# -> force resetting library if build type changes from/to Debug
-if (((CMAKE_BUILD_TYPE STREQUAL Debug) AND (TBB_LIBRARY MATCHES .+tbb.lib))
-    OR (NOT (CMAKE_BUILD_TYPE STREQUAL Debug) AND (TBB_LIBRARY MATCHES .+tbb_debug.lib)))
-  unset(TBB_LIBRARY CACHE)
-  unset(TBB_MALLOC_LIBRARY CACHE)
-  unset(TBB_PREVIEW_LIBRARY CACHE)
-  unset(TBB_MALLOC_PROXY_LIBRARY CACHE)
-endif()
+list(FIND TBB_FIND_COMPONENTS DEBUG _debug_index)
+if (DEFINED _debug_index)
+  list(REMOVE_ITEM TBB_FIND_COMPONENTS DEBUG)
+  set(TBB_DEBUG_FOUND true)
+endif(DEFINED _debug_index)
 
 # separate requested components into linking & threading
 list(APPEND TBB_FIND_COMPONENTS TBB)
@@ -139,18 +136,18 @@ foreach(component IN LISTS TBB_FIND_COMPONENTS)
       message(FATAL_ERROR "Invalid COMPONENT (${component}) specified.")
     endif()
   endif()
-  if (CMAKE_BUILD_TYPE STREQUAL Debug)
-    set(libname "${libname}_debug")
-  endif()
 
   find_library("${_var_name}_LIBRARY" ${libname}
     PATHS         ${TBB_ROOT_DIR} 
     PATH_SUFFIXES "lib/${ARCH_STR}/${tbb_lib_suffix}"
     DOC           "TBB ${libname} library path")
 
-  if (${_var_name}_LIBRARY)
-    set("TBB_${component}_FOUND" true)
-  endif()
+  if (TBB_DEBUG_FOUND)  
+    find_library("${_var_name}_DEBUG_LIBRARY" "${libname}_debug"
+      PATHS         ${TBB_ROOT_DIR} 
+      PATH_SUFFIXES "lib/${ARCH_STR}/${tbb_lib_suffix}"
+    DOC           "TBB ${libname} debug library path")
+  endif (TBB_DEBUG_FOUND)  
 
 endforeach(component IN LISTS TBB_FIND_COMPONENTS)
 
@@ -163,6 +160,12 @@ find_package_handle_standard_args(TBB
 if (TBB_FOUND)
     list(APPEND TBB_INCLUDE_DIRS ${TBB_INCLUDE_DIR})
     list(APPEND TBB_LIBRARIES ${TBB_LIBRARY} ${TBB_MALLOC_LIBRARY} ${TBB_PREVIEW_LIBRARY} ${TBB_MALLOC_PROXY_LIBRARY})
+    if (TBB_DEBUG_FOUND)
+      list(APPEND TBB_DEBUG_LIBRARIES ${TBB_DEBUG_LIBRARY} 
+                                      ${TBB_MALLOC_DEBUG_LIBRARY} 
+                                      ${TBB_PREVIEW_DEBUG_LIBRARY} 
+                                      ${TBB_MALLOC_PROXY_DEBUG_LIBRARY})
+    endif (TBB_DEBUG_FOUND)
 endif (TBB_FOUND)
 
 mark_as_advanced(
