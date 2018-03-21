@@ -1,28 +1,28 @@
 # Find the NLopt include and library
 # This module defines
-# NLOPT_INCLUDE_DIR, where to find nlopt.h
-# NLOPT_LIBRARY, the library to link against to use NLopt.
-# NLOPT_SHAREDLIBRARY
-# NLOPT_FOUND, If false, do not try to use NLopt.
-# NLOPT_ROOT_DIR, if this module use this path to find NLopt header
+# NLopt_INCLUDE_DIR, where to find nlopt.h
+# NLopt_LIBRARY, the library to link against to use NLopt.
+# NLopt_SHAREDLIBRARY
+# NLopt_FOUND, If false, do not try to use NLopt.
+# NLopt_ROOT_DIR, if this module use this path to find NLopt header
 # and libraries.
 #
-# In Windows, it looks for NLOPT_DIR environment variable if defined
+# In Windows, it looks for NLopt_DIR environment variable if defined
 
 include(FindPackageHandleStandardArgs)
 
 # ###################################
-# Exploring the possible NLOPT_ROOT_DIR
-if (NOT NLOPT_ROOT_DIR)
-    set(NLOPT_ROOT_DIR $ENV{NLOPT_DIR} CACHE PATH "NLOPT installation root path")
-endif (NOT NLOPT_ROOT_DIR)
+# Exploring the possible NLopt_ROOT_DIR
+if (NOT NLopt_ROOT_DIR)
+    set(NLopt_ROOT_DIR $ENV{NLopt_DIR} CACHE PATH "NLopt installation root path")
+endif (NOT NLopt_ROOT_DIR)
 
 include (GNUInstallDirs) # defines CMAKE_INSTALL_LIBDIR & CMAKE_INSTALL_INCLUDEDIR
 
 # Find header and lib directories
-find_path(NLOPT_INCLUDE_DIR nlopt.h
+find_path(NLopt_INCLUDE_DIR nlopt.h
     PATHS
-    ${NLOPT_ROOT_DIR}
+    ${NLopt_ROOT_DIR}
     ${CMAKE_INSTALL_FULL_INCLUDEDIR}
     ${CMAKE_INSTALL_FULL_OLDINCLUDEDIR}
     "$ENV{ProgramFiles}"
@@ -34,10 +34,10 @@ find_path(NLOPT_INCLUDE_DIR nlopt.h
     DOC "Location of NLopt header file"
 )
 
-find_library(NLOPT_LIBRARY
+find_library(NLopt_LIBRARY
     NAMES nlopt
     PATHS
-        ${NLOPT_ROOT_DIR}
+        ${NLopt_ROOT_DIR}
         ${CMAKE_INSTALL_FULL_LIBDIR}
         "$ENV{ProgramFiles}"
         "$ENV{USERPROFILE}/AppData/Local"
@@ -49,15 +49,15 @@ find_library(NLOPT_LIBRARY
 )
 
 find_package_handle_standard_args(
-  NLOPT
-  REQUIRED_VARS NLOPT_INCLUDE_DIR NLOPT_LIBRARY)
+  NLopt
+  REQUIRED_VARS NLopt_INCLUDE_DIR NLopt_LIBRARY)
 
-if (NLOPT_FOUND)
-  list(APPEND NLOPT_INCLUDE_DIRS ${NLOPT_INCLUDE_DIR})
-  list(APPEND NLOPT_LIBRARIES ${NLOPT_LIBRARY})
-endif (NLOPT_FOUND)
+if (NLopt_FOUND)
+  list(APPEND NLopt_INCLUDE_DIRS ${NLopt_INCLUDE_DIR})
+  list(APPEND NLopt_LIBRARIES ${NLopt_LIBRARY})
+endif (NLopt_FOUND)
 
 mark_as_advanced(
-    NLOPT_INCLUDE_DIR
-    NLOPT_LIBRARY
+    NLopt_INCLUDE_DIR
+    NLopt_LIBRARY
 )
