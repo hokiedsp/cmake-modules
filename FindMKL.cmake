@@ -145,6 +145,7 @@ find_path(MKL_INCLUDE_DIR MKL.h
 
 if (linking_component STREQUAL RUNTIME_LINKING)
     set(mkl_library_name mkl_rt)
+    set(MKL_RUNTIME_LINKING_FOUND true)
 else()
     set(mkl_library_name mkl_core)
     if (RTC_ARCH_X64)
