@@ -21,16 +21,13 @@ include (GNUInstallDirs) # defines CMAKE_INSTALL_LIBDIR & CMAKE_INSTALL_INCLUDED
 
 # Find header and lib directories
 find_path(NLopt_INCLUDE_DIR nlopt.h
-    PATHS
-    ${NLopt_ROOT_DIR}
-    ${CMAKE_INSTALL_FULL_INCLUDEDIR}
-    ${CMAKE_INSTALL_FULL_OLDINCLUDEDIR}
-    "$ENV{ProgramFiles}"
-    "$ENV{USERPROFILE}/AppData/Local"
-    "$ENV{USERPROFILE}/AppData/Local/Programs"
-    "$ENV{USERPROFILE}/AppData/Local/include"
-    "$ENV{SystemDrive}"
-    PATH_SUFFIXES nlopt/include
+    PATHS ${NLopt_ROOT_DIR}
+          "$ENV{ProgramFiles}"
+          "$ENV{USERPROFILE}/AppData/Local"
+          "$ENV{USERPROFILE}/AppData/Local/Programs"
+          "$ENV{USERPROFILE}/AppData/Local/include"
+          "$ENV{SystemDrive}"
+    PATH_SUFFIXES nlopt/include include
     DOC "Location of NLopt header file"
 )
 
@@ -38,13 +35,12 @@ find_library(NLopt_LIBRARY
     NAMES nlopt
     PATHS
         ${NLopt_ROOT_DIR}
-        ${CMAKE_INSTALL_FULL_LIBDIR}
         "$ENV{ProgramFiles}"
         "$ENV{USERPROFILE}/AppData/Local"
         "$ENV{USERPROFILE}/AppData/Local/Programs"
         "$ENV{USERPROFILE}/AppData/Local/lib"
         "$ENV{SystemDrive}"
-    PATH_SUFFIXES nlopt/lib
+    PATH_SUFFIXES nlopt/lib lib
     DOC "Location of NLopt library"
 )
 
@@ -57,8 +53,8 @@ if (WIN32 AND NOT NLopt_RUNTIME_LIBRARY_DIR)
                   "$ENV{USERPROFILE}/AppData/Local/Programs"
                   "$ENV{USERPROFILE}/AppData/Local/lib"
                   "$ENV{SystemDrive}"
-            PATH_SUFFIXES nlopt/bin
-            DOC        "NLopt Runtime Library Path" NO_DEFAULT_PATH)
+            PATH_SUFFIXES nlopt/bin bin
+            DOC    "NLopt Runtime Library Path" NO_DEFAULT_PATH)
 endif (WIN32 AND NOT NLopt_RUNTIME_LIBRARY_DIR)
 
 find_package_handle_standard_args(
