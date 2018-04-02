@@ -151,6 +151,8 @@ foreach(component IN LISTS TBB_FIND_COMPONENTS)
 
 endforeach(component IN LISTS TBB_FIND_COMPONENTS)
 
+list(REMOVE_ITEM TBB_FIND_COMPONENTS TBB)
+
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(TBB
     REQUIRED_VARS TBB_INCLUDE_DIR TBB_LIBRARY
